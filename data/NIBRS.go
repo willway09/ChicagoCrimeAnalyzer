@@ -35,6 +35,7 @@ func extractNIBRSCrime(str string, iucr string) NIBRSCrime {
 
 	crime.Against = temp
 	crime.Definition = strings.ReplaceAll(strs[2], "Definition: ", "")
+	crime.Definition = strings.ReplaceAll(strs[2], "Definition:", "")
 
 	IUCRSLines := strings.Split(iucr, "\n")
 
@@ -48,14 +49,15 @@ func extractNIBRSCrime(str string, iucr string) NIBRSCrime {
 }
 
 func main() {
-	file, err := os.Open("../nibrscodes.csv")
+	file, err := os.Open("../datasources/NIBRSCodes.csv")
 	handleError(err)
+	output, err := os.Create("NIBRS.sql");
+	handleError(err);
+
+	fmt.Fprintln(output, "SET DEFINE OFF;"); //Allow for insertion of ampersand
+	fmt.Fprintln(output, "INSERT ALL");
 
 	reader := csv.NewReader(file)
-
-	var IUCRtoNIBRS map[string]string
-
-	IUCRtoNIBRS = make(map[string]string)
 
 	for {
 		record, err := reader.Read()
@@ -64,47 +66,15 @@ func main() {
 		}
 
 		crime := extractNIBRSCrime(record[0], record[1])
-
-		for i := 0; i < len(crime.IUCRS); i++ {
-			_, ok := IUCRtoNIBRS[crime.IUCRS[i]]
-			if ok {
-				fmt.Println("Duplicate detected")
-				os.Exit(-1)
-			} else {
-				IUCRtoNIBRS[crime.IUCRS[i]] = crime.Code
-			}
-		}
+		crime.Name = prepareString(crime.Name)
+		crime.Against = prepareString(crime.Against)
+		crime.Definition = prepareString(crime.Definition)
+		fmt.Fprintf(output, "\tINTO NIBRSCrimes (NIBRS, Title, CrimeAgainst, Definition) VALUES(q'[%s]', q'[%s]', q'[%s]', q'[%s]')\n",
+			crime.Code, crime.Name, crime.Against, crime.Definition)
 	}
 
-	//fmt.Println(IUCRtoNIBRS)
+	fmt.Fprintln(output, "SELECT 1 FROM Dual;");
 
 	file.Close()
-
-	file, err = os.Open("../Crimes_-_2001_to_Present.csv")
-	handleError(err)
-
-	reader = csv.NewReader(file)
-
-	readHeader := false
-	for i := 0; i < 10000; i++ {
-		record, err := reader.Read()
-		if err != nil {
-			break
-		}
-
-		if !readHeader {
-			readHeader = true
-			continue
-		}
-
-		expectedCrime, ok := IUCRtoNIBRS[record[4]]
-
-		if(!ok) {
-			fmt.Printf("IUCR NOT FOUND: %s %s\n", record[4], record[14])
-		} else {
-			fmt.Printf("%s %s %s\n", record[4], record[14], expectedCrime)
-		}
-	}
-
-	file.Close()
+	output.Close();
 }
