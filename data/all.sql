@@ -5,3 +5,4 @@
 @communityareas.sql
 @communityareapopulations.sql
 @borders.sql
+@locations.sql

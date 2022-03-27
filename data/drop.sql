@@ -1,4 +1,5 @@
 DROP TABLE Crimes;
+DROP TABLE Locations;
 DROP TABLE Borders;
 DROP TABLE CommunityAreaPopulations;
 DROP TABLE CommunityAreas;

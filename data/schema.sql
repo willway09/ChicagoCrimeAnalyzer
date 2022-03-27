@@ -39,32 +39,28 @@ CREATE TABLE Borders (
     FOREIGN KEY(CommunityAreaFrom) REFERENCES CommunityAreas(ID),
     FOREIGN KEY(CommunityAreaTo) REFERENCES CommunityAreas(ID)
 );
+CREATE TABLE Locations (
+    ID INTEGER NOT NULL,
+    Description VARCHAR(60) NOT NULL,
+    PRIMARY KEY(ID)
+);
 CREATE TABLE Crimes (
 	ID INTEGER NOT NULL,
 	CaseNumber VARCHAR(10),
 	CrimeDate TIMESTAMP NOT NULL,
-	CrimeBlock VARCHAR(40) NOT NULL,
 	IUCR VARCHAR(4) NOT NULL,
-	LocDescription VARCHAR(60),
+	Location INTEGER,
 	Arrest INTEGER NOT NULL,
 	Domestic INTEGER NOT NULL,
-	Beat INTEGER NOT NULL,
-	District INTEGER,
-	Ward INTEGER,
 	CommunityArea INTEGER,
 	NIBRS VARCHAR(3) NOT NULL,
-	XCoord REAL,
-	YCoord REAL,
-	UpdatedOn TIMESTAMP NOT NULL,
 	Latitude REAL,
 	Longitude REAL,
 	PRIMARY KEY(ID),
 	CONSTRAINT IUCR FOREIGN KEY (IUCR) REFERENCES IUCRCrimes(IUCR),
 	CONSTRAINT NIBRS FOREIGN KEY (NIBRS) REFERENCES NIBRSCrimes(NIBRS),
+	CONSTRAINT Location FOREIGN KEY (Location) REFERENCES Locations(ID),
 	CONSTRAINT CommunityArea FOREIGN KEY (CommunityArea) REFERENCES CommunityAreas(ID),
-	CONSTRAINT check_Beat CHECK (Beat >= 111 AND Beat <= 2535),
-	CONSTRAINT check_District CHECK (District >= 1 AND District <= 31),
-	CONSTRAINT check_Ward CHECK (Ward >= 1 AND Ward <= 50),
 	CONSTRAINT check_Arrest_Boolean CHECK (Arrest = 0 OR Arrest = 1),
 	CONSTRAINT check_Domestic_Boolean CHECK (Domestic = 0 OR Domestic = 1)
 );

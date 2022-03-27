@@ -22,3 +22,7 @@ crimes: crimes.go general.go
 
 clean:
 	@-rm NIBRS NIBRS.sql
+	@-rm IUCR IUCR.sql
+	@-rm borders borders.sql
+	@-rm communityareas communityareas.sql communityareapopulations.sql
+	@-rm crimes crimes.sql locations.sql

@@ -27,6 +27,9 @@ func main() {
 
 	fmt.Fprintln(output, "ID,CaseNumber,CrimeDate,CrimeBlock,IUCR,LocDescription,Arrest,Domestic,Beat,District,Ward,CommunityArea,NIBRS,XCoord,YCoord,UpdatedOn,Latitude,Longitude")
 
+	locations := make(map[string]int)
+	maxLocId := 0
+
 	reader := csv.NewReader(file)
 
 	readHeader := false
@@ -51,6 +54,21 @@ func main() {
 
 		record[7] = strings.ReplaceAll(record[7], "\"", "'\"'")
 
+		locationIdStr := ""
+
+		if(record[7] != "") {
+			locationId, ok := locations[record[7]];
+
+			if(!ok) {
+				locations[record[7]] = maxLocId
+				locationId = maxLocId
+				maxLocId++
+			}
+
+			locationIdStr = fmt.Sprintf("%d", locationId)
+		} 
+
+
 		arrest := strToBool(record[8])
 		domestic:= strToBool(record[9])
 
@@ -61,8 +79,8 @@ func main() {
 
 		//record[18] = strings.ReplaceAll(record[18], "/", "-")
 
-		fmt.Fprintf(output, "%s,%s,%s,%s,%s,\"%s\",%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-			record[0], record[1], record[2], record[3], record[4], record[7], arrest, domestic, record[10], record[11], record[12], record[13], record[14], record[15], record[16], record[18], record[19], record[20])
+		fmt.Fprintf(output, "%s,%s,%s,%s,%s,%s,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+			record[0], record[1], record[2], record[3], record[4], locationIdStr, arrest, domestic, record[10], record[11], record[12], record[13], record[14], record[15], record[16], record[18], record[19], record[20])
 
 		counter++
 		//if counter >= 1000 {
@@ -70,9 +88,22 @@ func main() {
 		//}
 	}
 
+	locOutput, err := os.Create("locations.sql");
+	handleError(err);
+
+	fmt.Fprintln(locOutput, "SET DEFINE OFF;"); //Allow for insertion of ampersand
+	fmt.Fprintln(locOutput, "INSERT ALL");
+
+	for description, locationId := range locations {
+		fmt.Fprintf(locOutput, "\tINTO Locations (ID, Description) VALUES(%d, q'[%s]')\n",
+			locationId, description)
+	}
+
+	fmt.Fprintln(locOutput, "SELECT 1 FROM Dual;");
 
 	file.Close()
 	output.Close()
+	locOutput.Close();
 }
 
 
