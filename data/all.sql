@@ -3,6 +3,7 @@
 @IUCR.sql
 @NIBRS.sql
 @communityareas.sql
+@communityareasarea.sql
 @communityareapopulations.sql
 @borders.sql
 @locations.sql

@@ -20,6 +20,7 @@ CREATE TABLE NIBRSCrimes (
 CREATE TABLE CommunityAreas (
     ID INTEGER NOT NULL,
     Name VARCHAR(25) NOT NULL,
+    Area REAL,
     PRIMARY KEY(ID),
     CONSTRAINT check_CommunityArea CHECK (ID >= 1 AND ID <= 77)
 );

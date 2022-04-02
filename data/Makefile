@@ -1,7 +1,8 @@
-queries: NIBRS IUCR communityareas borders crimes
+queries: NIBRS IUCR communityareas borders crimes communityareasarea.R
 	./NIBRS
 	./IUCR
 	./communityareas
+	Rscript communityareasarea.R
 	./borders
 	./crimes
 

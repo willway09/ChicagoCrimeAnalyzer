@@ -8,6 +8,7 @@ borders.sql
 communityareapopulations.sql
 communityareas
 communityareas.sql
+communityareasarea.sql
 crimes
 crimes.sql
 locations.sql
