@@ -60,24 +60,6 @@ func loadQuery(filename string) string {
 //colTypes, _ := rows.ColumnTypes()
 //colCount := len(colTypes)
 
-type query1Parameters struct {
-	LakeOrder int64
-}
-
-type query1Result struct {
-	Name string
-}
-
-type query2Parameters struct {
-	MinLen float64
-	NameLike string
-}
-
-type query2Result struct {
-	Name string
-	Lenght float64
-}
-
 func arrayToCommaList(intf interface{}) string {
 	arr := reflect.ValueOf(intf)
 	rtn := ""
@@ -135,6 +117,8 @@ func runQuery[T interface{}](db *sql.DB, filename string, parameters interface{}
 		v := reflect.ValueOf(&res).Elem()
 
 		if v.NumField() != len(cols) {
+			fmt.Printf("Running: %s\n", query)
+			fmt.Printf("Number of Fields: %d, Length of Columns: %d\n", v.NumField(), len(cols))
 			handleError(errors.New("Big error"))
 		}
 
