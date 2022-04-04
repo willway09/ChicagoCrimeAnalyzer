@@ -18,6 +18,18 @@ type query2Result struct {
 	Lenght float64
 }
 
+type query3Parameters struct {
+	IUCRs []string
+	NIBRSs []string
+	Month int64
+	Year int64
+}
+
+type query3Result struct {
+	Year int64
+	Count int64
+}
+
 type noParameters struct {
 
 }
