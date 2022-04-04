@@ -2,7 +2,7 @@ WITH Counts AS (
 SELECT Decade, Year, Month, COUNT(ID) AS CrimeCount, CommunityArea
 FROM CrimesBreakout
 GROUP BY Decade, Year, Month, CommunityArea
-HAVING CommunityArea = 14
+HAVING CommunityArea = :commarea
 ORDER BY Year ASC, Month ASC
 )
 SELECT Counts.Year AS Year, Counts.Month AS Month, CrimeCount /
