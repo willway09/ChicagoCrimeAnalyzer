@@ -50,7 +50,6 @@ func main() {
 			if(len(parts) == 1) {
 				w.Header().Set("Content-Type", "text/html")
 			} else {
-				fmt.Println(parts[len(parts) - 1])
 				w.Header().Set("Content-Type", mimeTypes[strings.ToLower(parts[len(parts) - 1])])
 			}
 
@@ -66,6 +65,20 @@ func main() {
 		var parameters noParameters
 
 		result := runQuery[communityAreasResult](db, "../queries/communityareas.sql", parameters)
+
+		err := json.NewEncoder(w).Encode(&result)
+		if(!handleServerError(err, w)) {
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+	})
+
+	http.HandleFunc("/api/borders", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		var parameters noParameters
+
+		result := runQuery[bordersResult](db, "../queries/borders.sql", parameters)
 
 		err := json.NewEncoder(w).Encode(&result)
 		if(!handleServerError(err, w)) {

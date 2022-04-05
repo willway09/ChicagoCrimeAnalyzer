@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<!--Example of how to use the ChicagoMap object-->
+<html>
+	<head>
+		<script src="JS/map.js"></script>
+
+		<script>
+			function main() {
+				console.log("Hello world");
+
+				function clickHandler(areanum) {
+					console.log("Hello world");
+					document.getElementById("selected").innerHTML = areanum;
+				}
+
+				let map = new ChicagoMap("map", clickHandler);
+			}
+			window.onload = main;
+
+		</script>
+	</head>
+	<body style="background-color: black">
+		<div id="selected">0</div><br>
+		<div id="map"></div>
+	</body>
+</html>

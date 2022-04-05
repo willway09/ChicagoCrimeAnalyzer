@@ -48,3 +48,8 @@ type IUCRResult struct {
 	NIBRS string
 	Title string
 }
+
+type bordersResult struct {
+	From int64
+	To int64
+}
