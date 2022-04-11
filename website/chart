@@ -1,0 +1,54 @@
+
+				type: "scatter",
+				data: test
+				/*{
+					datasets: [{
+						pointRadius: 4,
+						pointBackgroundColor: "rgba(0, 0, 255, 1)",
+						data: [{ "x": 5, "y": 5 }]
+					}]
+				}*/,
+				options: {
+					scales: {
+						x: {
+							type: 'linear',
+							position: 'bottom'
+						}
+					}
+					/*scales: {
+						x: {
+							type: 'time',
+							time: {
+								unit: 'month'
+							}
+						}
+					},
+					plugins: {
+						legend: {
+
+						},
+						labels:{
+							font:{
+								size: 16,
+								family: "'Play', sans-serif",
+								fontColor: "#ffffff",
+							}
+						},
+						zoom: {
+							pan:{
+								enabled: true,
+								mode: 'xy',
+							},
+							zoom: {
+								wheel: {
+									enabled: true,
+								},
+								pinch: {
+									enabled: true
+								},
+								mode: 'xy',
+							}
+						}
+					},
+					*/
+				}

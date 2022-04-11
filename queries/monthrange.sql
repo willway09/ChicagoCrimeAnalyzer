@@ -1,0 +1,1 @@
+SELECT MIN(MonthIdx) AS Min, MAX(MonthIdx) AS Max FROM CrimesBreakout;

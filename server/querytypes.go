@@ -1,11 +1,16 @@
 package main
 
 type query1Parameters struct {
-	LakeOrder int64
+	CommunityArea int64
+	BeginMonthIdx int64
+	EndMonthIdx int64
 }
 
 type query1Result struct {
-	Name string
+	Year int64
+	Month int64
+	PopulationDensity float64
+	GeographicDensity float64
 }
 
 type query2Parameters struct {
@@ -52,4 +57,9 @@ type IUCRResult struct {
 type bordersResult struct {
 	From int64
 	To int64
+}
+
+type monthrangeResult struct {
+	Min int64
+	Max int64
 }

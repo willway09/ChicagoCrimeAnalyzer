@@ -240,3 +240,46 @@ object-fit: cover;
         padding-bottom: 2em;
     }
 }
+
+input {
+    background-color: #5A6266;
+}
+
+select {
+    color: var(--secondaryText);
+    background-color: #5A6266;
+}
+
+select {
+    color: var(--secondaryText);
+    background-color: #5A6266;
+}
+
+#blankout {
+    z-index: 1;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    background-color: rgba(127, 127, 127, .5);
+}
+
+@keyframes loadingAnimation {
+    /*0% {transform: rotate(0deg)}
+    50% {transform: rotate(180deg)}*/
+    from {
+	    transform: rotate(0deg);
+    }
+    to {
+	    transform: rotate(359deg);
+    }
+}
+
+#loading {
+	animation-name: loadingAnimation;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}

@@ -1,10 +1,17 @@
 WITH Counts AS (
-SELECT Year, COUNT(ID) as Total FROM CrimesBreakout
+
+
+SELECT Year, COUNT(ID) as Total, IUCR AS Code FROM CrimesBreakout
 WHERE IUCR IN (:iucr)
-OR NIBRS IN(:nibrs)
 GROUP BY Year, Month
 HAVING Month = :month AND Year >= :year
 )
+
+OR NIBRS IN(:nibrs)
+
+
+
+
 SELECT Year, Total FROM Counts
 UNION
 SELECT Year, 0 AS Total FROM CrimesBreakout

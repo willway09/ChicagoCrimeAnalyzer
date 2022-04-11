@@ -115,6 +115,44 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 	})
 
+	http.HandleFunc("/api/monthrange", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		var parameters noParameters
+
+		result := runQuery[monthrangeResult](db, "../queries/monthrange.sql", parameters)
+
+		err := json.NewEncoder(w).Encode(&result)
+		if(!handleServerError(err, w)) {
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+	})
+
+	http.HandleFunc("/api/query1", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		dec := json.NewDecoder(r.Body)
+		var parameters query1Parameters
+		err := dec.Decode(&parameters)
+
+		if err != nil {
+			w.WriteHeader(412) //Precondition failed
+			fmt.Fprintln(w, "Invalid JSON")
+			return
+		}
+
+		fmt.Println(parameters);
+
+		result := runQuery[query1Result](db, "../queries/query1.sql", parameters)
+
+		err = json.NewEncoder(w).Encode(&result)
+		if(!handleServerError(err, w)) {
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+	})
+
 	http.HandleFunc("/api/query3", func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 

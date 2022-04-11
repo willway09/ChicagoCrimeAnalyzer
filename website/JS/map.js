@@ -5,7 +5,13 @@ let fillColor = "rgba(0,0,0,0)";
 
 class ChicagoMap {
 
-	async initializeMap() {
+	async initializeMap(initialValue) {
+
+		//If not Border mode, asynchronously load
+		if(this.mode != "Border") {
+			this.initializeBorders();
+		}
+
 		let c = document.getElementById(this.div);
 
 		let response = await fetch('Images/map.svg')
@@ -18,9 +24,10 @@ class ChicagoMap {
 			let colorString = x.style.stroke;
 			colorString = colorString.replace("rgb(","");
 			colorString = colorString.replace(")","");
-			let index = colorString.split(",")[1] - 10;
+			let index = colorString.split(",")[0] - 10;
+			let check = colorString.split(", ")[1];
 
-			if(!isNaN(index) && index >= 0) {
+			if(!isNaN(index) && index >= 0 && check == 50) {
 				let instance = this.areaIndices[index - 1].length;
 				let id = `commarea${index}_${instance}`;
 				x.id = id;
@@ -28,12 +35,20 @@ class ChicagoMap {
 				x.style.fill = fillColor;
 				this.areaIndices[index - 1].push(id);
 				x.addEventListener("click", () => {
-					console.log(index);
-					this.areaClicked(index);
+					this.setAreaActive(index);
 				});
 			}
 
 		});
+
+		//If Border mode, need info now, so wait and load
+		if(this.mode == "Border") {
+			await this.initializeBorders();
+		 }
+
+		if(initialValue != 0) {
+			this.setAreaActive(initialValue);
+		}
 	}
 
 	async initializeBorders() {
@@ -46,9 +61,10 @@ class ChicagoMap {
 		});
 	}
 
-	constructor(div, clickHandler) {
+	constructor(div, clickHandler, mode, initialValue = 0) {
 		this.div = div;
 		this.clickHandler = clickHandler;
+		this.mode = mode;
 		this.areaIndices = [];
 		this.borders = new Map()
 		this.needsClearing = [];
@@ -57,9 +73,7 @@ class ChicagoMap {
 			this.borders[i+1] = [];
 		}
 
-		this.initializeMap();
-		this.initializeBorders();
-
+		this.initializeMap(initialValue);
 	}
 
 	setColor(commarea, color, flag=true) {
@@ -94,11 +108,13 @@ class ChicagoMap {
 		this.needsClearing.forEach( x => this.clear(x));
 	}
 
-	areaClicked(areanum) {
+	setAreaActive(areanum) {
 		this.clearAll();
-		this.borders[areanum].forEach( (x) => {
-			this.setSecondary(x);
-		});
+		if(this.mode == "Border") {
+			this.borders[areanum].forEach( (x) => {
+				this.setSecondary(x);
+			});
+		}
 		this.setPrimary(areanum);
 		this.clickHandler(areanum);
 	}
