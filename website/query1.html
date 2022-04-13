@@ -38,18 +38,22 @@
 
 			document.getElementById("blankout").style.visibility="visible";
 
-			const response = await fetch("/api/query1", {
-				method: "POST",
-				mode: "cors",
-				credentials: "same-origin",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-				body: JSON.stringify(parameters)
-			});
-			//const response = await fetch("/api/query1"); //Uncomment for rapid development
+			let response = null;
+			if(window.location.search.includes("dev")) {
+				response = await fetch("/api/query1");
+			} else {
+				response = await fetch("/api/query1", {
+					method: "POST",
+					mode: "cors",
+					credentials: "same-origin",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					redirect: "follow",
+					referrerPolicy: "no-referrer",
+					body: JSON.stringify(parameters)
+				});
+			}
 
 			let output = await response.json();
 
@@ -136,11 +140,16 @@
 			</div>
 		</div>
 		<div class="nav-wrapper">
-
-			<ul id="navigation">
-				<li><a href="home.html">Home</a></li>
-			</ul>
-
+			<div class="nav-wrapper" style="display: flex; justify-content: center;">
+				<ul id="navigation">
+					<li><a href="home.html">Home</a></li>
+					<li><a href="query1.html">Query 1</a></li>
+					<li><a href="query2.html">Query 2</a></li>
+					<li><a href="query3.html">Query 3</a></li>
+					<li><a href="query4.html">Query 4</a></li>
+					<li><a href="query5.html">Query 5</a></li>
+				</ul>
+			</div>
 		</div>
 
 	</section>
@@ -148,7 +157,7 @@
 		<div class="main-container">
 			<h3 style="text-align: center;">Query 1: Community Area Overall Crime</h3>
 
-			<p style="font-size: 16px" id="question">How has the monthly crime density (either population or geographic) in a given common area changed over the past <i>n</i> months? Did crime appear to increase, decrease, or remain constant?</p>
+			<p style="font-size: 16px" id="question">How has the monthly crime density (either population or geographic) in a given common area changed over a given time interval? Did crime appear to increase, decrease, or remain constant?</p>
 			<p style="font-size: 12px">
 			Crime density is defined as the total amount of crime per relevant unit.
 			In this case, population crime density describes how much crime occurs per person (in units <i>crimes/person</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).

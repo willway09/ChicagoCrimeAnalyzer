@@ -1,7 +1,8 @@
 WITH Counts AS (
 SELECT Decade, Year, Month, COUNT(ID) AS CrimeCount, CommunityArea
 FROM CrimesBreakout
-GROUP BY Decade, Year, Month, CommunityArea
+GROUP BY Decade, Year, Month, MonthIdx, CommunityArea
+HAVING MonthIdx >= :begin AND MonthIdx <= :end
 ORDER BY Year ASC, Month ASC
 ),
 Densities AS (

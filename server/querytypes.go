@@ -14,13 +14,15 @@ type query1Result struct {
 }
 
 type query2Parameters struct {
-	MinLen float64
-	NameLike string
+	BeginMonthIdx int64
+	EndMonthIdx int64
+	CrimeRate float64
 }
 
 type query2Result struct {
-	Name string
-	Lenght float64
+	Year int64
+	Month int64
+	Counts int64
 }
 
 type query3Parameters struct {

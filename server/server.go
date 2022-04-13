@@ -153,6 +153,30 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 	})
 
+	http.HandleFunc("/api/query2", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		dec := json.NewDecoder(r.Body)
+		var parameters query2Parameters
+		err := dec.Decode(&parameters)
+
+		if err != nil {
+			w.WriteHeader(412) //Precondition failed
+			fmt.Fprintln(w, "Invalid JSON")
+			return
+		}
+
+		fmt.Println(parameters);
+
+		result := runQuery[query2Result](db, "../queries/query2.sql", parameters)
+
+		err = json.NewEncoder(w).Encode(&result)
+		if(!handleServerError(err, w)) {
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+	})
+
 	http.HandleFunc("/api/query3", func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
