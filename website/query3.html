@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="CSS/DarkProfile.css">
+	<title>Query 3</title>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"></script>
+
+	<script src="JS/map.js"></script>
+	<script src="JS/functions.js"></script>
+	<script>
+		let graph = null;
+
+		let areaNames = new Map();
+
+		let monthRange = null;
+
+		async function run() {
+			let communityarea = parseInt(document.getElementById("communityarea").value);
+			let begin = monthToMonthIdx(stringToMonth(document.getElementById("begin").value))
+			let end = monthToMonthIdx(stringToMonth(document.getElementById("end").value))
+
+			//Input validation
+			if(end < begin) {
+				window.alert("Beginning month comes after ending month");
+				return;
+			}
+
+			let parameters = {
+				CommunityArea: communityarea,
+				BeginMonthIdx: begin,
+				EndMonthIdx: end
+			}
+			console.log(JSON.stringify(parameters));
+
+			document.getElementById("blankout").style.visibility="visible";
+
+			let response = null;
+			if(window.location.search.includes("dev")) {
+				response = await fetch("/api/query1");
+			} else {
+				response = await fetch("/api/query1", {
+					method: "POST",
+					mode: "cors",
+					credentials: "same-origin",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					redirect: "follow",
+					referrerPolicy: "no-referrer",
+					body: JSON.stringify(parameters)
+				});
+			}
+
+			let output = await response.json();
+
+			clearChart(graph);
+
+			if(document.getElementById("population").checked) {
+				setAxes(graph, "Time", "Population Crime Density (crimes/person)");
+				addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`);
+			} else {
+				setAxes(graph, "Time", "Geographic Crime Density (crimes/km^2)");
+				addDataSeries(graph, output, "GeographicDensity", `Geographic Crime Density for ${areaNames.get(communityarea)}`);
+
+			}
+
+			document.getElementById("blankout").style.visibility="hidden";
+		}
+
+		async function main() {
+			//Disable submission to load data
+			document.getElementById("submit").disabled = true;
+
+			graph = new Chart(document.getElementById("graph").getContext('2d'), getDefaultChartConfig());
+			console.log(graph)
+
+			response = await fetch("/api/monthrange");
+			monthRange = await(response.json());
+			console.log(monthRange);
+
+			let begin = document.getElementById("begin");
+			let end = document.getElementById("end");
+			console.log("Here");
+
+			let beginYear = monthIdxToMonth(monthRange[0]["Min"]).year
+			let endYear = monthIdxToMonth(monthRange[0]["Max"]).year
+			console.log(beginYear);
+
+			for(let i = beginYear; i <= endYear; i++) {
+				let beginOption = document.createElement("option");
+				beginOption.value = i;
+				beginOption.innerHTML = i;
+				begin.appendChild(beginOption);
+
+				let endOption = document.createElement("option");
+				endOption.value = i;
+				endOption.innerHTML = i;
+				end.appendChild(endOption);
+			}
+			end.value=endYear;
+
+			response = await fetch("/api/iucrcrimes");
+			let iucrs = await response.json();
+			console.log(iucrs);
+
+			let iucrbucket = document.getElementById("iucrbucket");
+
+			iucrs.forEach( (x) => {
+				let node = document.createElement("div");
+				node.id = `iucr${x.IUCR}`;
+				node.innerHTML = `${x.IUCR}`;
+				node.title = `${x.Title}`;
+				node.classList.add("bucket-item");
+				iucrbucket.appendChild(node);
+			});
+
+			//Enable submission when finished loading data
+			document.getElementById("submit").disabled = false;
+		}
+
+		window.onload = main;
+	</script>
+	<style>
+	/*svg {
+		width: 2000px;
+	}*/
+	.bucket {
+		height: 300px;
+		position: relative;
+		overflow-y: auto;
+		width: 100%;
+		background-color: red;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.bucket-item {
+		color: #e8e6e3;
+		background-color: #5A6266;
+		font-family: 'Inconsolata', monospace;
+		text-align: center;
+		border: 1px solid #e8e6e3;
+		margin: 1px;
+		display: inline;
+	}
+
+	.bucket-title {
+		display: flex;
+	}
+	</style>
+</head>
+
+<body>
+	<section class="s1">
+		<div class="main-container">
+			<div class="greeting-wrapper">
+				<h1>Crime data in the City of Chicago</h1>
+			</div>
+		</div>
+		<div class="nav-wrapper" style="display: flex; justify-content: center;">
+			<ul id="navigation">
+				<li><a href="home.html">Home</a></li>
+				<li><a href="query1.html">Query 1</a></li>
+				<li><a href="query2.html">Query 2</a></li>
+				<li><a href="query3.html">Query 3</a></li>
+				<li><a href="query4.html">Query 4</a></li>
+				<li><a href="query5.html">Query 5</a></li>
+			</ul>
+		</div>
+
+	</section>
+	<section class="s1">
+		<div class="main-container">
+			<h3 style="text-align: center;">Query 3: Crimes By Type</h3>
+
+			<p style="font-size: 16px" id="question"> What is the total number of crimes of a given IUCR or NIBRS code in the <i>n</i>th month of the year over the given year interval? Do any trends emerge?</p>
+			<p style="font-size: 12px">
+			IUCR and NIBRS are codes which
+			classify crimes at either the state or federal level. In either case, this query would select only crimes
+			of the given code, and output the total times they occur in a given month of the year (for example just
+			in May) as a function of the past n years. Suppose <i>n</i> = 5 (indexing from 0, June), <i>m</i> = 6 and the IUCR
+			was "0860" (retail theft). This would then return the total number of times retail theft occurred in
+			each month of June over the past 6 years (from 2017 to 2022). Determining which month a timestamp
+			occurs in constitutes computation on the time axis, and summing number of times that crime occurred
+			for the given month is computation on the y-axis; thus, this is a complex trend query. The utility of
+			this trend is that it is season-agnostic; because samples are taken from each month of the year, they
+			are always in the same season. This means that observed trends, such as an increase or decrease in
+			a particular crime type over time, can be attributed to something other than seasonal impacts. This
+			query could also be extended to allow for several different codes to be input, with each corresponding
+			to a different color on the output plot - this would allow for useful comparative analysis.
+			</p>
+
+		</div>
+	</section>
+	<section class="s1">
+		<div class="main-container">
+			<div style="display: flex; flex-direction: row;">
+				<div style="flex: 1 1 0px;">
+					<form action="javascript:void(0)">
+						<label for="begin">Starting Year</label>
+						<select name="begin" id="begin"></select><br>
+
+						<label for="end">Ending Year</label>
+						<select name="end" id="end"></select><br>
+
+						<label for="month">Month</label>
+						<select name="month" id="month">
+							<option value="0">January</option>
+							<option value="1">February</option>
+							<option value="2">March</option>
+							<option value="3">April</option>
+							<option value="4">May</option>
+							<option value="5">June</option>
+							<option value="6">July</option>
+							<option value="7">August</option>
+							<option value="8">September</option>
+							<option value="9">October</option></option>
+							<option value="10">November</option>
+							<option value="11">December</option>
+						</select><br>
+
+						<div style="display: flex; flex-direction: column">
+							<div style="display: flex;">
+								<div>
+									<div class="bucket-title">IUCR Crimes List</div>
+									<div id="iucrbucket" class="bucket"></div>
+								</div>
+								<div>
+									<div class="bucket-title">NIBRS Crimes List</div>
+									<div id="nibrsbucket" class="bucket"></div>
+								</div>
+							</div>
+							<div>
+								<div class="bucket-title">Selected Crimes</div>
+								<div id="crimesbucket" class="bucket"></div>
+							<div>
+						</div>
+
+						<button onclick="run()" id="submit">Submit</button>
+					</form>
+					<div id="map"></div>
+				</div>
+
+				<div style="flex: 1 1 0px;">
+					<canvas id="graph" style="width: 750px; height: 500px">
+					<!--<canvas id="graph">-->
+				</div>
+			</div>
+		</div>
+	</section>
+	<div id="blankout" style="display: flex; justify-content: center; align-items: center;">
+		<img src="Images/loading.svg" id="loading" style="width: min(200px, 20vw); height: min(200px, 20vw)"/>
+	</div>
+</body>
+
+</html>

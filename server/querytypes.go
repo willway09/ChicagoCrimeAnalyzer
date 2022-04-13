@@ -47,7 +47,7 @@ type communityAreasResult struct {
 }
 
 type NIBRSResult struct {
-	NIBRS string
+	IUCR string
 	Title string
 }
 
