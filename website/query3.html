@@ -115,7 +115,75 @@
 				node.innerHTML = `${x.IUCR}`;
 				node.title = `${x.Title}`;
 				node.classList.add("bucket-item");
+
+				node.draggable = true;
+				node.addEventListener("dragstart", (e) => {
+					e.dataTransfer.setData("text", e.target.id);
+				});
+
 				iucrbucket.appendChild(node);
+			});
+
+			response = await fetch("/api/nibrscrimes");
+			let nibrss = await response.json();
+			console.log(nibrss);
+
+			let nibrsbucket = document.getElementById("nibrsbucket");
+
+			nibrss.forEach( (x) => {
+				let node = document.createElement("div");
+				node.id = `nibrs${x.IUCR}`;
+				node.innerHTML = `${x.IUCR}`;
+				node.title = `${x.Title}`;
+				node.classList.add("bucket-item");
+
+				node.draggable = true;
+				node.addEventListener("dragstart", (e) => {
+					e.dataTransfer.setData("text", e.target.id);
+				});
+
+				nibrsbucket.appendChild(node);
+			});
+
+			let crimesbucket = document.getElementById("crimesbucket");
+
+			crimesbucket.addEventListener("drop", (e) => {
+				e.preventDefault();
+				let data = e.dataTransfer.getData("text");
+				let node = document.getElementById(data);
+				if(crimesbucket.children.length < 10) {
+					crimesbucket.appendChild(node);
+				} else {
+					window.alert("Cannot have more than 10 crimes for analysis");
+				}
+			});
+
+			crimesbucket.addEventListener("dragover", (e) => {
+				e.preventDefault();
+			});
+
+			iucrbucket.addEventListener("drop", (e) => {
+				e.preventDefault();
+				let data = e.dataTransfer.getData("text");
+				if(data.includes("iucr")) {
+					iucrbucket.appendChild(document.getElementById(data));
+				}
+			});
+
+			iucrbucket.addEventListener("dragover", (e) => {
+				e.preventDefault();
+			});
+
+			nibrsbucket.addEventListener("drop", (e) => {
+				e.preventDefault();
+				let data = e.dataTransfer.getData("text");
+				if(data.includes("nibrs")) {
+					nibrsbucket.appendChild(document.getElementById(data));
+				}
+			});
+
+			nibrsbucket.addEventListener("dragover", (e) => {
+				e.preventDefault();
 			});
 
 			//Enable submission when finished loading data
@@ -133,7 +201,7 @@
 		position: relative;
 		overflow-y: auto;
 		width: 100%;
-		background-color: red;
+		background-color: #c1c1c1;
 		display: flex;
 		flex-direction: column;
 	}
@@ -146,10 +214,14 @@
 		border: 1px solid #e8e6e3;
 		margin: 1px;
 		display: inline;
+		/*flex-grow: 1;*/
 	}
 
 	.bucket-title {
-		display: flex;
+		display: block;
+		color: var(--secondaryText);
+		font-family: 'Inconsolata', monospace;
+		text-align: center;
 	}
 	</style>
 </head>
@@ -223,21 +295,24 @@
 							<option value="11">December</option>
 						</select><br>
 
+						<br>
+
 						<div style="display: flex; flex-direction: column">
 							<div style="display: flex;">
-								<div>
+								<div style="flex-grow: 1">
 									<div class="bucket-title">IUCR Crimes List</div>
 									<div id="iucrbucket" class="bucket"></div>
 								</div>
-								<div>
+								<div style="flex-grow: 1">
 									<div class="bucket-title">NIBRS Crimes List</div>
 									<div id="nibrsbucket" class="bucket"></div>
 								</div>
 							</div>
+							<br>
 							<div>
 								<div class="bucket-title">Selected Crimes</div>
 								<div id="crimesbucket" class="bucket"></div>
-							<div>
+							</div>
 						</div>
 
 						<button onclick="run()" id="submit">Submit</button>
