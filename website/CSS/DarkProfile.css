@@ -22,7 +22,7 @@ h1, h2, h3, h4, h5, h6, strong{
     color: var(--mainText);
     font-family: 'Anton', sans-serif;
 }
-p, li, span, label, input, textarea{
+p, li, span, label, input, textarea, text{
     color: var(--secondaryText);
     font-family: 'Inconsolata', monospace;
 }

@@ -122,3 +122,8 @@ function getDefaultChartConfig() {
 
 	}
 }
+
+//Taken from https://www.trysmudford.com/blog/linear-interpolation-functions/, slightly modified
+const lerp = (x, y, a) => x * (1 - a) + y * a;
+const invlerp = (x, y, a) => (a - x) / (y - x);
+const range = (x1, y1, x2, y2, a) => lerp(x2, y2, invlerp(x1, y1, a));

@@ -15,6 +15,11 @@ plotAreas = function() {
 	minY = min(chicago[[1]][[1]][[1]][,2])
 	maxY = max(chicago[[1]][[1]][[1]][,2])
 
+	print(sprintf("Minimum X: %g", minX))
+	print(sprintf("Maximum X: %g", maxX))
+	print(sprintf("Minimum Y: %g", minY))
+	print(sprintf("Maximum Y: %g", maxY))
+
 	margin = -.013
 
 	a = seq(from=minX,to=maxX,by=.01)
