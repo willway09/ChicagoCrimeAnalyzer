@@ -1,5 +1,5 @@
-let primaryColor = "#FF0000";
-let secondaryColor = "#0000FF";
+let primaryColor = "#ACD7E6";
+let secondaryColor = "#E6BAAC";
 let clearColor = "#777";
 let fillColor = "rgba(0,0,0,0)";
 
@@ -174,7 +174,7 @@ class ChicagoMap {
 		this.initializeMap(initialValue);
 	}
 
-	setColor(commarea, color, flag=true) {
+	setColor(commarea, color, bold=true, flag=true) {
 		let indices = this.areaIndices[commarea - 1];
 
 		let reInsert = document.getElementById(this.div).children[0].children[1];
@@ -183,6 +183,12 @@ class ChicagoMap {
 			let segment = document.getElementById(x);
 			segment.remove();
 			segment.style.stroke = color;	
+			if(bold) {
+				segment.style.strokeWidth=1.5
+			} else {
+				segment.style.strokeWidth=.75
+			}
+
 			reInsert.appendChild(segment);
 			if(flag) {
 				this.needsClearing.push(commarea);
@@ -199,7 +205,7 @@ class ChicagoMap {
 	}
 
 	clear(commarea) {
-		this.setColor(commarea, clearColor, false);
+		this.setColor(commarea, clearColor, false, false);
 	}
 
 	clearAll() {

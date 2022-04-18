@@ -208,8 +208,6 @@ func main() {
 		var parameters query4Parameters
 		err := dec.Decode(&parameters)
 
-		fmt.Println(parameters)
-
 		if err != nil {
 			w.WriteHeader(412) //Precondition failed
 			fmt.Fprintln(w, "Invalid JSON")
@@ -227,8 +225,31 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 	})
 
+	http.HandleFunc("/api/query5", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		dec := json.NewDecoder(r.Body)
+		var parameters query5Parameters
+		err := dec.Decode(&parameters)
+
+		if err != nil {
+			w.WriteHeader(412) //Precondition failed
+			fmt.Fprintln(w, "Invalid JSON")
+			return
+		}
+
+		fmt.Println(parameters);
+
+		result := runQuery[query5Result](db, "../queries/query5.sql", parameters)
+
+		err = json.NewEncoder(w).Encode(&result)
+		if(!handleServerError(err, w)) {
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+	})
+
 	http.ListenAndServe(":8080", nil)
 
-	fmt.Println("Hello world")
 	db.Close()
 }

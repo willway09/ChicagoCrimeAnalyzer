@@ -111,6 +111,8 @@ order.forEach( (x) => {
 	);
 });
 
+console.log(colors);
+
 function addDataSeries(chart, output, property, label, number=0) {
 	let data = [];
 	let labels = [];

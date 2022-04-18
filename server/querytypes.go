@@ -55,6 +55,19 @@ type query4Result struct {
 	WestCounts int64
 }
 
+type query5Parameters struct {
+	CommunityArea int64
+	BeginMonthIdx int64
+	EndMonthIdx int64
+}
+
+type query5Result struct {
+	Year int64
+	Month int64
+	PopulationDensity float64
+	NeighborPopulationDensity float64
+}
+
 type noParameters struct {
 
 }
