@@ -44,6 +44,28 @@ let months = [
 	"December",
 ];
 
+//Adapted from https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
+function HSVtoRGB(h, s, v) {
+	var r, g, b, i, f, p, q, t;
+
+	i = Math.floor(h * 6);
+	f = h * 6 - i;
+	p = v * (1 - s);
+	q = v * (1 - f * s);
+	t = v * (1 - (1 - f) * s);
+	switch (i % 6) {
+		case 0: r = v, g = t, b = p; break;
+		case 1: r = q, g = v, b = p; break;
+		case 2: r = p, g = v, b = t; break;
+		case 3: r = p, g = q, b = v; break;
+		case 4: r = t, g = p, b = v; break;
+		case 5: r = v, g = p, b = q; break;
+	}
+
+	return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+}
+
+
 function clearChart(chart) {
 	chart.data.datasets = [];
 	chart.options.scales.y.title = {
@@ -65,7 +87,31 @@ function setAxes(chart, xtitle, ytitle) {
 	chart.update();
 }
 
-function addDataSeries(chart, output, property, label) {
+let order = [
+	0,
+	5,
+	7,
+	6,
+	1,
+	2,
+	3,
+	8,
+	9,
+	4,
+];
+
+let colors = [];
+
+order.forEach( (x) => {
+	colors.push(
+		{
+			point: HSVtoRGB(195 / 360 + x / 10., .25, .90),
+			line: HSVtoRGB(195 / 360 + x / 10., .25, .50)
+		}
+	);
+});
+
+function addDataSeries(chart, output, property, label, number=0) {
 	let data = [];
 	let labels = [];
 
@@ -77,18 +123,31 @@ function addDataSeries(chart, output, property, label) {
 		labels.push(`${months[x.Month]} ${x.Year}`);
 	});
 
-	chart.data = {
-		labels: labels,
-		datasets: [
+	if(number == 0) {
+		chart.data = {
+			labels: labels,
+			datasets: [
+				{
+					label: label,
+					pointRadius: 4,
+					pointBackgroundColor: colors[number].point,
+					borderColor: colors[number].line,
+					data: data,
+				},
+			],
+		};
+	} else {
+		chart.data.datasets.push(
 			{
 				label: label,
 				pointRadius: 4,
-				pointBackgroundColor: "rgba(173,216,230,1)",
-				borderColor: "rgba(95,119,127,1)",
+				pointBackgroundColor: colors[number].point,
+				borderColor: colors[number].line,
 				data: data,
-			},
-		],
-	};
+			}
+		);
+	}
+
 
 	chart.update();
 }

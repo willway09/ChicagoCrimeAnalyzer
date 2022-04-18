@@ -37,6 +37,24 @@ type query3Result struct {
 	Count int64
 }
 
+type query4Parameters struct {
+	BeginMonthIdx int64
+	EndMonthIdx int64
+	Latitude1 float64
+	Latitude2 float64
+	Longitude1 float64
+	Longitude2 float64
+}
+
+type query4Result struct {
+	Year int64
+	Month int64
+	NorthCounts int64
+	SouthCounts int64
+	EastCounts int64
+	WestCounts int64
+}
+
 type noParameters struct {
 
 }

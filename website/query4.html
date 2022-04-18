@@ -12,14 +12,16 @@
 	<script src="JS/map.js"></script>
 	<script src="JS/functions.js"></script>
 	<script>
-		let graph = null;
+		let vertgraph = null;
+		let horzgraph = null;
 
 		let areaNames = new Map();
 
 		let monthRange = null;
 
+		let map = null;
+
 		async function run() {
-			let communityarea = parseInt(document.getElementById("communityarea").value);
 			let begin = monthToMonthIdx(stringToMonth(document.getElementById("begin").value))
 			let end = monthToMonthIdx(stringToMonth(document.getElementById("end").value))
 
@@ -30,9 +32,12 @@
 			}
 
 			let parameters = {
-				CommunityArea: communityarea,
 				BeginMonthIdx: begin,
-				EndMonthIdx: end
+				EndMonthIdx: end,
+				Latitude1: map.latitude,
+				Latitude2: map.latitude,
+				Longitude1: map.longitude,
+				Longitude2: map.longitude
 			}
 			console.log(JSON.stringify(parameters));
 
@@ -40,9 +45,9 @@
 
 			let response = null;
 			if(window.location.search.includes("dev")) {
-				response = await fetch("/api/query1");
+				response = await fetch("/api/query4");
 			} else {
-				response = await fetch("/api/query1", {
+				response = await fetch("/api/query4", {
 					method: "POST",
 					mode: "cors",
 					credentials: "same-origin",
@@ -57,52 +62,50 @@
 
 			let output = await response.json();
 
-			clearChart(graph);
+			clearChart(vertgraph);
+			clearChart(horzgraph);
 
-			if(document.getElementById("population").checked) {
-				setAxes(graph, "Time", "Population Crime Density (crimes/person)");
-				addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`);
-			} else {
-				setAxes(graph, "Time", "Geographic Crime Density (crimes/km^2)");
-				addDataSeries(graph, output, "GeographicDensity", `Geographic Crime Density for ${areaNames.get(communityarea)}`);
+			console.log(output);
 
-			}
+			setAxes(vertgraph, "Time", "Number of Crimes (crimes)");
+			addDataSeries(vertgraph, output, "NorthCounts", `Number of Crimes North of Line`, 0);
+			addDataSeries(vertgraph, output, "SouthCounts", `Number of Crimes South of Line`, 1);
+
+			setAxes(horzgraph, "Time", "Number of Crimes (crimes)");
+			addDataSeries(horzgraph, output, "EastCounts", `Number of Crimes East of Line`, 0);
+			addDataSeries(horzgraph, output, "WestCounts", `Number of Crimes West of Line`, 1);
 
 			document.getElementById("blankout").style.visibility="hidden";
 		}
 
 		async function main() {
 			//Disable submission to load data
+
+			/*let body = document.body;
+			console.log("Hello world");
+			let temp = document.createElement("div");
+			temp.style = "background-color: white; margin: 10px; padding: 10px;";
+			body.appendChild(temp);
+
+
+			colors.forEach( (y) => {
+				let div1 = document.createElement("div");
+				div1.style = `width: 100px; height: 100px; background-color: ${y.point}; display: inline-block;`
+				temp.appendChild(div1);
+
+				let div2 = document.createElement("div");
+				div2.style = `width: 100px; height: 100px; background-color: ${y.line}; display: inline-block;`
+				temp.appendChild(div2);
+
+				temp.appendChild(document.createElement("br"));
+			});*/
+
 			document.getElementById("submit").disabled = true;
 
-			graph = new Chart(document.getElementById("graph").getContext('2d'), getDefaultChartConfig());
-			console.log(graph)
+			vertgraph = new Chart(document.getElementById("vertgraph").getContext('2d'), getDefaultChartConfig());
+			horzgraph = new Chart(document.getElementById("horzgraph").getContext('2d'), getDefaultChartConfig());
 
-			let response = await fetch("/api/communityareas");
-			let data = await response.json();
-
-			let communityarea = document.getElementById("communityarea");
-
-			data.forEach( (x) => {
-				let node = document.createElement("option");
-				node.value = x.ID;
-				node.innerHTML = x.Name;
-				communityarea.appendChild(node);
-				areaNames.set(x.ID, x.Name);
-			});
-
-			function clickHandler(areanum) {
-				console.log("Hello world");
-				//document.getElementById("selected").innerHTML = areanum;
-				communityarea.value = areanum;
-			}
-
-			let map = new ChicagoMap("map", clickHandler, "LatLon", communityarea.value);
-
-			/*communityarea.addEventListener("change", (e) => {
-				map.setAreaActive(communityarea.value);
-				console.log(e);
-			});*/
+			map = new ChicagoMap("map", (x) => {}, "LatLon", 0);
 
 			response = await fetch("/api/monthrange");
 			monthRange = await(response.json());
@@ -155,16 +158,19 @@
 		<div class="main-container">
 			<h3 style="text-align: center;">Query 4: Community Area Overall Crime</h3>
 
-			<p style="font-size: 16px" id="question">How has the monthly crime density (either population or geographic) in a given common area changed over a given time interval? Did crime appear to increase, decrease, or remain constant?</p>
+			<p style="font-size: 16px" id="question">Does the geographic concentration of monthly total crime in Chicago shift North/South or East/West relative to a given coordinate (<i>lon</i>, <i>lat</i>) over the course of a given time interval?</p>
 			<p style="font-size: 12px">
-			Crime density is defined as the total amount of crime per relevant unit.
-			In this case, population crime density describes how much crime occurs per person (in units <i>crimes/person</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).
-			Thus, this query essentially asks how do these quantities change over time.
-			This may superficially seem simple, but two factors complicate this query.
-			First, because dates will be stored as timestamps, grouping crime by either month, quarter, or year requires computation.
-			Second, population changes over time, but is only accurately recorded every 10 years in the US census.
-			This means that interpolation will have to be employed to approximate the population when the crime was committed, which also requires non-trivial computation.
-			Because both the time and crime density are computed, this qualifies as a trend query, and the output can be plotted in a scatter plot with crime density as a function of time, which should allow for easy visualization of trends of increase or decrease.
+				For the given (<i>lon</i>, <i>lat</i>) point
+				(which the user inputs via a map interface), draw a vertical and horizontal line through it. For the
+				North/South case, compute the total amount of crime which occurs above (North of) the horizontal
+				line in a given month, then do the same for below (South of) the horizontal line; repeat for every
+				month in the time range. For the East/West case, do the same, but instead use the vertical line, where East
+				is to the right and West is to the left. This can then be plotted on a scatter plot (using two colors for
+				each side of the line), and if it is observed that an increase in crime on one side of a line corresponds
+				to a decrease in crime on the other side, then it can be posited that crime is changing it’s concentration
+				across that line. The grouping by month satisfies computation on the time axis, and the summing of
+				crimes which pass the "side of the line" filter serves as computation for the y-axis, which makes this
+				a complex trend query.
 			</p>
 
 		</div>
@@ -180,23 +186,14 @@
 						<label for="end">Ending Month</label>
 						<input id="end" type="month"><br>
 
-						<label for="communityarea">Community Area</label>
-						<select id="communityarea"></select><br>
-
-						<label for="population">Population Crime Density</label>
-						<input type="radio" class="radio" id="population" name="density" value="population" checked><br>
-
-						<label for="geographic">Geographic Crime Density</label>
-						<input type="radio" class="radio" id="geographic" name="density" value="geographic"><br>
-
 						<button onclick="run()" id="submit">Submit</button>
 					</form>
 					<div id="map"></div>
 				</div>
 
 				<div style="flex: 1 1 0px;">
-					<canvas id="graph" style="width: 750px; height: 500px">
-					<!--<canvas id="graph">-->
+					<canvas id="vertgraph" style="width: 750px; height: 500px"></canvas>
+					<canvas id="horzgraph" style="width: 750px; height: 500px"></canvas>
 				</div>
 			</div>
 		</div>

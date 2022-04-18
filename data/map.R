@@ -39,7 +39,15 @@ plotAreas = function() {
 				yavg = centroid[[1]][[2]]
 				plot(st_as_sfc(data$the_geom[j]), add=TRUE, border=rgb((10 +  i) / 255, 50/255, (10 +  i) / 255))
 					#xlim=c(minX-margin,maxX+margin),ylim=c(minY-margin,maxY+margin))
-				text(xavg, yavg, sprintf("%d", i), cex=.5, col="#e8e6e3")
+				if(i == 55) { #Manually set offset for text
+					text(xavg + .01, yavg - .005, sprintf("%d", i), cex=.5, col="#e8e6e3")
+				} else if(i == 34) {
+					text(xavg, yavg + .005, sprintf("%d", i), cex=.5, col="#e8e6e3")
+				} else if(i == 56) {
+					text(xavg, yavg - .003, sprintf("%d", i), cex=.5, col="#e8e6e3")
+				} else {
+					text(xavg, yavg, sprintf("%d", i), cex=.5, col="#e8e6e3")
+				}
 			}
 		}
 	}

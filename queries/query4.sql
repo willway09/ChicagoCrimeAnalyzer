@@ -3,16 +3,9 @@ WITH Months AS (
     WHERE MonthIdx >= :begin AND MonthIdx <= :end
 ), 
 
-Lon AS (
-    SELECT :x FROM DUAL
-),
-Lat AS (
-    SELECT :y FROM DUAL
-),
-
 NorthCrimes AS (
     SELECT ID, MonthIdx FROM CrimesBreakout
-    WHERE Latitude > ALL (SELECT * FROM Lat)
+    WHERE Latitude > :y1
 ), North AS (
     SELECT Year, Month, COUNT(ID) AS NorthTotal FROM NorthCrimes 
     RIGHT OUTER JOIN Months ON NorthCrimes.MonthIdx = Months.MonthIdx
@@ -21,7 +14,7 @@ NorthCrimes AS (
 
 SouthCrimes AS (
     SELECT ID, MonthIdx FROM CrimesBreakout
-    WHERE Latitude < ALL (SELECT * FROM Lat)
+    WHERE Latitude < :y2
 ), South AS (
     SELECT Year, Month, COUNT(ID) AS SouthTotal FROM SouthCrimes 
     RIGHT OUTER JOIN Months ON SouthCrimes.MonthIdx = Months.MonthIdx
@@ -30,7 +23,7 @@ SouthCrimes AS (
 
 EastCrimes AS (
     SELECT ID, MonthIdx FROM CrimesBreakout
-    WHERE Longitude > ALL (SELECT * FROM Lon)
+    WHERE Longitude > :x1
 ), East AS (
     SELECT Year, Month, COUNT(ID) AS EastTotal FROM EastCrimes 
     RIGHT OUTER JOIN Months ON EastCrimes.MonthIdx = Months.MonthIdx
@@ -39,7 +32,7 @@ EastCrimes AS (
 
 WestCrimes AS (
     SELECT ID, MonthIdx FROM CrimesBreakout
-    WHERE Longitude < ALL (SELECT * FROM Lon)
+    WHERE Longitude < :x2
 ), West AS (
     SELECT Year, Month, COUNT(ID) AS WestTotal FROM WestCrimes 
     RIGHT OUTER JOIN Months ON WestCrimes.MonthIdx = Months.MonthIdx
