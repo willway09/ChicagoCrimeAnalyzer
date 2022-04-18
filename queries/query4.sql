@@ -1,48 +1,50 @@
 WITH Months AS (
-    SELECT DISTINCT Year, Month FROM CrimesBreakout
+    SELECT DISTINCT Year, Month, MonthIdx FROM CrimesBreakout
+    WHERE MonthIdx >= :begin AND MonthIdx <= :end
+), 
+
+Lon AS (
+    SELECT :x FROM DUAL
+),
+Lat AS (
+    SELECT :y FROM DUAL
+),
+
+NorthCrimes AS (
+    SELECT ID, MonthIdx FROM CrimesBreakout
+    WHERE Latitude > ALL (SELECT * FROM Lat)
 ), North AS (
-    SELECT Year, Month, COUNT(ID) AS NorthTotal FROM CrimesBreakout
-    WHERE Latitude > :y
-    GROUP BY Year, Month
-), NorthComplete AS (
-    SELECT Year, Month, NorthTotal FROM North
-    UNION
-    SELECT Year, Month, 0 AS NorthTotal FROM Months
-    WHERE (Year, Month) NOT IN (SELECT Year, Month FROM North)
+    SELECT Year, Month, COUNT(ID) AS NorthTotal FROM NorthCrimes 
+    RIGHT OUTER JOIN Months ON NorthCrimes.MonthIdx = Months.MonthIdx
+    GROUP BY Year, Month, Months.MonthIdx
 ),
 
-South AS (
-    SELECT Year, Month, COUNT(ID) AS SouthTotal FROM CrimesBreakout
-    WHERE Latitude < :y
-    GROUP BY Year, Month
-), SouthComplete AS (
-    SELECT Year, Month, SouthTotal FROM South
-    UNION
-    SELECT Year, Month, 0 AS SouthTotal FROM Months
-    WHERE (Year, Month) NOT IN (SELECT Year, Month FROM South)
+SouthCrimes AS (
+    SELECT ID, MonthIdx FROM CrimesBreakout
+    WHERE Latitude < ALL (SELECT * FROM Lat)
+), South AS (
+    SELECT Year, Month, COUNT(ID) AS SouthTotal FROM SouthCrimes 
+    RIGHT OUTER JOIN Months ON SouthCrimes.MonthIdx = Months.MonthIdx
+    GROUP BY Year, Month, Months.MonthIdx
 ),
 
-East AS (
-    SELECT Year, Month, COUNT(ID) AS EastTotal FROM CrimesBreakout
-    WHERE Longitude > :x
-    GROUP BY Year, Month
-), EastComplete AS (
-    SELECT Year, Month, EastTotal FROM East
-    UNION
-    SELECT Year, Month, 0 AS EastTotal FROM Months
-    WHERE (Year, Month) NOT IN (SELECT Year, Month FROM East)
+EastCrimes AS (
+    SELECT ID, MonthIdx FROM CrimesBreakout
+    WHERE Longitude > ALL (SELECT * FROM Lon)
+), East AS (
+    SELECT Year, Month, COUNT(ID) AS EastTotal FROM EastCrimes 
+    RIGHT OUTER JOIN Months ON EastCrimes.MonthIdx = Months.MonthIdx
+    GROUP BY Year, Month, Months.MonthIdx
 ),
 
-West AS (
-    SELECT Year, Month, COUNT(ID) AS WestTotal FROM CrimesBreakout
-    WHERE Longitude < :x
-    GROUP BY Year, Month
-), WestComplete AS (
-    SELECT Year, Month, WestTotal FROM West
-    UNION
-    SELECT Year, Month, 0 AS WestTotal FROM Months
-    WHERE (Year, Month) NOT IN (SELECT Year, Month FROM West)
+WestCrimes AS (
+    SELECT ID, MonthIdx FROM CrimesBreakout
+    WHERE Longitude < ALL (SELECT * FROM Lon)
+), West AS (
+    SELECT Year, Month, COUNT(ID) AS WestTotal FROM WestCrimes 
+    RIGHT OUTER JOIN Months ON WestCrimes.MonthIdx = Months.MonthIdx
+    GROUP BY Year, Month, Months.MonthIdx
 )
 
-SELECT * FROM NorthComplete NATURAL JOIN SouthComplete NATURAL JOIN EastComplete NATURAL JOIN WestComplete
+SELECT * FROM North NATURAL JOIN South NATURAL JOIN East NATURAL JOIN West
 ORDER BY Year, Month;
