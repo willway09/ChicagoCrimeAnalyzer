@@ -166,7 +166,7 @@
 			In this case, population crime density describes how much crime occurs per person (in units <i>crimes / 100,000 people</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).
 			Thus, this query essentially asks how do these quantities change over time.
 			This may superficially seem simple, but two factors complicate this query.
-			First, because dates will be stored as timestamps, grouping crime by either month, quarter, or year requires computation.
+			First, because dates will be stored as timestamps, grouping crime by month requires computation.
 			Second, population changes over time, but is only accurately recorded every 10 years in the US census.
 			This means that interpolation will have to be employed to approximate the population when the crime was committed, which also requires non-trivial computation.
 			Because both the time and crime density are computed, this qualifies as a trend query, and the output can be plotted in a scatter plot with crime density as a function of time, which should allow for easy visualization of trends of increase or decrease.
