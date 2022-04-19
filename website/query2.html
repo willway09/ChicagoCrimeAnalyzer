@@ -62,7 +62,7 @@
 			clearChart(graph);
 
 			setAxes(graph, "Time", "Number of Community Areas");
-			addDataSeries(graph, output, "Counts", `Community Areas With Population Crime Density exceeding ${m} crimes/person`);
+			addDataSeries(graph, output, "Counts", `Community Areas With Population Crime Density exceeding ${m} crimes / 100,000 people`);
 
 			document.getElementById("blankout").style.visibility="hidden";
 		}
@@ -156,9 +156,9 @@
 						<label for="end">Ending Month</label>
 						<input id="end" type="month"><br>
 
-						<label for="M">Crime Rate (<span id="mvalue">0.050</span> <i>crimes/person</i>)</label>
-						<!--Maximum value from database: 0.0643469787082653384790292268308339584997-->
-						<input id="M" type="range" min="0" max=".1" step=".001" value=".05" />
+						<label for="M">Crime Rate (<span id="mvalue">5000</span> <i>crimes / 100,000 people</i>)</label>
+						<!--Maximum value from database: 6434.69787082653384790292268308339584997-->
+						<input id="M" type="range" min="0" max="10000" step="1" value="5000" />
 						<br>
 
 						<button onclick="run()" id="submit">Submit</button>

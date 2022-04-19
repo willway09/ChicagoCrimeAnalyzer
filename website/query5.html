@@ -3,7 +3,7 @@
 
 <head>
 	<link rel="stylesheet" href="CSS/DarkProfile.css">
-	<title>Query 1</title>
+	<title>Query 5</title>
 
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
@@ -40,9 +40,9 @@
 
 			let response = null;
 			if(window.location.search.includes("dev")) {
-				response = await fetch("/api/query1");
+				response = await fetch("/api/query5");
 			} else {
-				response = await fetch("/api/query1", {
+				response = await fetch("/api/query5", {
 					method: "POST",
 					mode: "cors",
 					credentials: "same-origin",
@@ -59,8 +59,9 @@
 
 			clearChart(graph);
 
-			setAxes(graph, "Time", "Population Crime Density (crimes/person)");
-			addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`);
+			setAxes(graph, "Time", "Population Crime Density (crimes / 100,000 person)");
+			addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`, 0);
+			addDataSeries(graph, output, "NeighborPopulationDensity", `Average Population Crime Density for ${areaNames.get(communityarea)}'s Neighbors`, 1);
 
 			document.getElementById("blankout").style.visibility="hidden";
 		}
@@ -148,16 +149,17 @@
 		<div class="main-container">
 			<h3 style="text-align: center;">Query 5: Community Area Overall Crime</h3>
 
-			<p style="font-size: 16px" id="question">How has the monthly crime density (either population or geographic) in a given common area changed over a given time interval? Did crime appear to increase, decrease, or remain constant?</p>
+			<p style="font-size: 16px" id="question">Is the monthly population crime density for a given community area similar to the that of it’s neighboring community areas from over a given time interval? Does an increase/decrease in the community area's crime density correspond to a decrease/increase in that of it's neighbors?</p>
 			<p style="font-size: 12px">
-			Crime density is defined as the total amount of crime per relevant unit.
-			In this case, population crime density describes how much crime occurs per person (in units <i>crimes/person</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).
-			Thus, this query essentially asks how do these quantities change over time.
-			This may superficially seem simple, but two factors complicate this query.
-			First, because dates will be stored as timestamps, grouping crime by either month, quarter, or year requires computation.
-			Second, population changes over time, but is only accurately recorded every 10 years in the US census.
-			This means that interpolation will have to be employed to approximate the population when the crime was committed, which also requires non-trivial computation.
-			Because both the time and crime density are computed, this qualifies as a trend query, and the output can be plotted in a scatter plot with crime density as a function of time, which should allow for easy visualization of trends of increase or decrease.
+			The computation of monthly population crime density for the given community
+			area is similar to that from the first query. However, this procedure is then repeated for all of that
+			community area's neighbors, and the result of this is averaged, which adds more computation. This
+			is done for every month within the time range. The crime timestamp grouping by
+			month is the calculation on the time axis, and the interpolation and averaging is calculation
+			on the y-axis, making this a complex trend query. When plotted, if it is observed that a change in the
+			given community area’s population crime density corresponds to an opposing change in the density
+			of the surrounding community areas, then this could indicate crime moving in or out of the given
+			community to it's neighbors.
 			</p>
 
 		</div>

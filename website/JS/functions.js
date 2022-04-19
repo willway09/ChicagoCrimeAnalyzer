@@ -113,16 +113,24 @@ order.forEach( (x) => {
 
 console.log(colors);
 
-function addDataSeries(chart, output, property, label, number=0) {
+function addDataSeries(chart, output, property, label, number=0, byYear=false) {
 	let data = [];
 	let labels = [];
 
 	output.forEach((x) => {
-		let point = {};
-		point.x = x.Year * 12 + x.Month;
-		point.y = x[property];
-		data.push(point);
-		labels.push(`${months[x.Month]} ${x.Year}`);
+		if(byYear) {
+			let point = {};
+			point.x = x.Year
+			point.y = x[property];
+			data.push(point);
+			labels.push(`${x.Year}`);
+		} else {
+			let point = {};
+			point.x = x.Year * 12 + x.Month;
+			point.y = x[property];
+			data.push(point);
+			labels.push(`${months[x.Month]} ${x.Year}`);
+		}
 	});
 
 	if(number == 0) {

@@ -19,30 +19,53 @@
 		let monthRange = null;
 
 		async function run() {
-			let communityarea = parseInt(document.getElementById("communityarea").value);
-			let begin = monthToMonthIdx(stringToMonth(document.getElementById("begin").value))
-			let end = monthToMonthIdx(stringToMonth(document.getElementById("end").value))
+			let begin = parseInt(document.getElementById("begin").value);
+			let end = parseInt(document.getElementById("end").value);
+			let month = parseInt(document.getElementById("month").value);
+			let crimesbucket = document.getElementById("crimesbucket");
 
 			//Input validation
 			if(end < begin) {
-				window.alert("Beginning month comes after ending month");
+				window.alert("Beginning year comes after ending month");
+				return;
+			}
+			if(crimesbucket.children.length == 0) {
+				window.alert("Please specify at least one crime code");
 				return;
 			}
 
+			let IUCRs = [];
+			let NIBRSs = [];
+
+			Array.from(crimesbucket.children).forEach( (x) => {
+				if(x.id.includes("iucr")) {
+					IUCRs.push(x.innerHTML);
+				}
+
+				if(x.id.includes("nibrs")) {
+					NIBRSs.push(x.innerHTML);
+				}
+
+			});
+
+			let codes = IUCRs.concat(NIBRSs);
+
 			let parameters = {
-				CommunityArea: communityarea,
-				BeginMonthIdx: begin,
-				EndMonthIdx: end
+				IUCRs: IUCRs,
+				NIBRSs: NIBRSs,
+				BeginYear: begin,
+				EndYear: end,
+				MonthIUCR: month,
+				MonthNIBRS: month
 			}
-			console.log(JSON.stringify(parameters));
 
 			document.getElementById("blankout").style.visibility="visible";
 
 			let response = null;
 			if(window.location.search.includes("dev")) {
-				response = await fetch("/api/query1");
+				response = await fetch("/api/query3");
 			} else {
-				response = await fetch("/api/query1", {
+				response = await fetch("/api/query3", {
 					method: "POST",
 					mode: "cors",
 					credentials: "same-origin",
@@ -57,16 +80,26 @@
 
 			let output = await response.json();
 
-			clearChart(graph);
+			//Split into separate data series
 
-			if(document.getElementById("population").checked) {
-				setAxes(graph, "Time", "Population Crime Density (crimes/person)");
-				addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`);
-			} else {
-				setAxes(graph, "Time", "Geographic Crime Density (crimes/km^2)");
-				addDataSeries(graph, output, "GeographicDensity", `Geographic Crime Density for ${areaNames.get(communityarea)}`);
+			let series = new Map();
+			let names = new Map();
 
-			}
+			codes.forEach( (x)=> {
+				series.set(x, []);
+			});
+
+			output.forEach( (x) => {
+				names.set( x.Code, x.CodeType + ": " + x.Code);
+				series.get(x.Code).push(x)
+			});
+
+			let num = 0;
+			setAxes(graph, "Time", "Number of Crimes (crimes)");
+			codes.forEach( (x) => {
+				addDataSeries(graph, series.get(x), "Count", names.get(x), number=num, byYear=true);
+				num++;
+			});
 
 			document.getElementById("blankout").style.visibility="hidden";
 		}
@@ -254,9 +287,9 @@
 			IUCR and NIBRS are codes which
 			classify crimes at either the state or federal level. In either case, this query would select only crimes
 			of the given code, and output the total times they occur in a given month of the year (for example just
-			in May) as a function of the past n years. Suppose <i>n</i> = 5 (indexing from 0, June), <i>m</i> = 6 and the IUCR
+			in May) as a function of the past n years. Suppose <i>n</i> = 5 (indexing from 0, June), the year range was from 2015 to 2020 and the IUCR
 			was "0860" (retail theft). This would then return the total number of times retail theft occurred in
-			each month of June over the past 6 years (from 2017 to 2022). Determining which month a timestamp
+			each month of June over from 2015 to 2020. Determining which month a timestamp
 			occurs in constitutes computation on the time axis, and summing number of times that crime occurred
 			for the given month is computation on the y-axis; thus, this is a complex trend query. The utility of
 			this trend is that it is season-agnostic; because samples are taken from each month of the year, they

@@ -60,7 +60,7 @@
 			clearChart(graph);
 
 			if(document.getElementById("population").checked) {
-				setAxes(graph, "Time", "Population Crime Density (crimes/person)");
+				setAxes(graph, "Time", "Population Crime Density (crimes / 100,000 people)");
 				addDataSeries(graph, output, "PopulationDensity", `Population Crime Density for ${areaNames.get(communityarea)}`);
 			} else {
 				setAxes(graph, "Time", "Geographic Crime Density (crimes/km^2)");
@@ -158,7 +158,7 @@
 			<p style="font-size: 16px" id="question">How has the monthly crime density (either population or geographic) in a given common area changed over a given time interval? Did crime appear to increase, decrease, or remain constant?</p>
 			<p style="font-size: 12px">
 			Crime density is defined as the total amount of crime per relevant unit.
-			In this case, population crime density describes how much crime occurs per person (in units <i>crimes/person</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).
+			In this case, population crime density describes how much crime occurs per person (in units <i>crimes / 100,000 people</i>), and geographic crime density describes how much crime occurs per unit area (in units <i>crimes/km^2</i>).
 			Thus, this query essentially asks how do these quantities change over time.
 			This may superficially seem simple, but two factors complicate this query.
 			First, because dates will be stored as timestamps, grouping crime by either month, quarter, or year requires computation.

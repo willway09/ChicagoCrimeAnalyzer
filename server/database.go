@@ -63,11 +63,15 @@ func loadQuery(filename string) string {
 func arrayToCommaList(intf interface{}) string {
 	arr := reflect.ValueOf(intf)
 	rtn := ""
-	for i := 0; i < arr.Len(); i++ {
-		if(i != arr.Len() - 1) {
-			rtn += fmt.Sprintf("'%s', ", arr.Index(i))
-		} else {
-			rtn += fmt.Sprintf("'%s'", arr.Index(i))
+	if arr.Len() == 0 {
+		rtn = "''"
+	} else {
+		for i := 0; i < arr.Len(); i++ {
+			if(i != arr.Len() - 1) {
+				rtn += fmt.Sprintf("'%s', ", arr.Index(i))
+			} else {
+				rtn += fmt.Sprintf("'%s'", arr.Index(i))
+			}
 		}
 	}
 	return rtn
