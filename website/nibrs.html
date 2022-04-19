@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>NIBRS Crime Codes</title>
+        <meta name="viewport" content="width=device-width, initial-scale1.0" />
+    
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+    
+        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inconsolata:wght@600&display=swap"
+            rel="stylesheet">
+    
+        <link rel="stylesheet" href="CSS/DarkProfile.css">
+
+	<script>
+		async function main() {
+			let response = await fetch("/api/nibrscrimes");
+			let data = await response.json();
+
+			let table = document.getElementById("output");
+
+			data.forEach( (x) => {
+				let name = document.createElement("td");
+				name.innerHTML = x.NIBRS;
+
+				let desc = document.createElement("td");
+				desc.innerHTML = x.Title;
+				
+				let row = document.createElement("tr");
+
+				row.appendChild(name);
+				row.appendChild(desc);
+
+				table.appendChild(row);
+			});
+		}
+
+		window.onload = main;
+
+	</script>
+    
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <body>
+        <section class="s1">
+            <div class="main-container">
+                <div class="greeting-wrapper">
+                    <h1>NIBRS Codes Mapping</h1>
+		    <table id="output">
+		    	<tr>
+				<td>NIBRS Code</td>
+				<td>Description</td>
+			</tr>
+		    </table>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>

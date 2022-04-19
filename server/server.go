@@ -106,7 +106,7 @@ func main() {
 
 		var parameters noParameters
 
-		result := runQuery[NIBRSResult](db, "../queries/iucrcrimes.sql", parameters)
+		result := runQuery[IUCRResult](db, "../queries/iucrcrimes.sql", parameters)
 
 		err := json.NewEncoder(w).Encode(&result)
 		if(!handleServerError(err, w)) {

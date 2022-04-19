@@ -11,6 +11,7 @@
 
 	<script src="JS/map.js"></script>
 	<script src="JS/functions.js"></script>
+	<script src="JS/clock.js"></script>
 	<script>
 		let graph = null;
 
@@ -19,6 +20,9 @@
 		let monthRange = null;
 
 		async function run() {
+
+			startClock(0);
+
 			let begin = monthToMonthIdx(stringToMonth(document.getElementById("begin").value))
 			let end = monthToMonthIdx(stringToMonth(document.getElementById("end").value))
 			let m = parseFloat(document.getElementById("M").value);
@@ -65,6 +69,7 @@
 			addDataSeries(graph, output, "Counts", `Community Areas With Population Crime Density exceeding ${m} crimes / 100,000 people`);
 
 			document.getElementById("blankout").style.visibility="hidden";
+			stopClock();
 		}
 
 		async function main() {
@@ -172,8 +177,9 @@
 			</div>
 		</div>
 	</section>
-	<div id="blankout" style="display: flex; justify-content: center; align-items: center;">
+	<div id="blankout" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
 		<img src="Images/loading.svg" id="loading" style="width: min(200px, 20vw); height: min(200px, 20vw)"/>
+		<h1 id="clock"></h1>
 	</div>
 </body>
 

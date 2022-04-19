@@ -11,6 +11,7 @@
 
 	<script src="JS/map.js"></script>
 	<script src="JS/functions.js"></script>
+	<script src="JS/clock.js"></script>
 	<script>
 		let graph = null;
 
@@ -18,7 +19,22 @@
 
 		let monthRange = null;
 
+		function openWin(url) {
+			window.open(url, "_blank", "menubar=no,titlebar=no,toolbar=no");
+		}
+
+		function openIUCR() {
+			openWin("/iucr.html");
+		}
+
+		function openNIBRS() {
+			openWin("/nibrs.html");
+		}
+
 		async function run() {
+
+			startClock(0);
+
 			let begin = parseInt(document.getElementById("begin").value);
 			let end = parseInt(document.getElementById("end").value);
 			let month = parseInt(document.getElementById("month").value);
@@ -29,6 +45,7 @@
 				window.alert("Beginning year comes after ending month");
 				return;
 			}
+
 			if(crimesbucket.children.length == 0) {
 				window.alert("Please specify at least one crime code");
 				return;
@@ -102,6 +119,7 @@
 			});
 
 			document.getElementById("blankout").style.visibility="hidden";
+			stopClock();
 		}
 
 		async function main() {
@@ -165,8 +183,8 @@
 
 			nibrss.forEach( (x) => {
 				let node = document.createElement("div");
-				node.id = `nibrs${x.IUCR}`;
-				node.innerHTML = `${x.IUCR}`;
+				node.id = `nibrs${x.NIBRS}`;
+				node.innerHTML = `${x.NIBRS}`;
 				node.title = `${x.Title}`;
 				node.classList.add("bucket-item");
 
@@ -333,11 +351,21 @@
 						<div style="display: flex; flex-direction: column">
 							<div style="display: flex;">
 								<div style="flex-grow: 1">
-									<div class="bucket-title">IUCR Crimes List</div>
+									<div class="bucket-title">
+									<a href="javascript:openIUCR()">
+									IUCR Crimes List
+									<img src="Images/share.svg" width="12px"/>
+									</a>
+									</div>
 									<div id="iucrbucket" class="bucket"></div>
 								</div>
 								<div style="flex-grow: 1">
-									<div class="bucket-title">NIBRS Crimes List</div>
+									<div class="bucket-title">
+									<a href="javascript:openNIBRS()">
+									NIBRS Crimes List
+									<img src="Images/share.svg" width="12px"/>
+									</a>
+									</div>
 									<div id="nibrsbucket" class="bucket"></div>
 								</div>
 							</div>
@@ -359,8 +387,9 @@
 			</div>
 		</div>
 	</section>
-	<div id="blankout" style="display: flex; justify-content: center; align-items: center;">
+	<div id="blankout" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
 		<img src="Images/loading.svg" id="loading" style="width: min(200px, 20vw); height: min(200px, 20vw)"/>
+		<h1 id="clock"></h1>
 	</div>
 </body>
 

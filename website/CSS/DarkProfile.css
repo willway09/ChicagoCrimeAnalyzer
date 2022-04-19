@@ -23,7 +23,7 @@ h1, h2, h3, h4, h5, h6, strong{
     color: var(--mainText);
     font-family: 'Anton', sans-serif;
 }
-p, li, span, label, input, textarea, text{
+p, li, span, label, input, textarea, text, td{
     color: var(--secondaryText);
     font-family: 'Inconsolata', monospace;
 }
@@ -41,6 +41,11 @@ h3{ font-size: 28px;}
 h4{ font-size: 24px;}
 h5{ font-size: 20px;}
 h6{ font-size: 16px;}
+
+table, tr, td {
+	border: 1px solid var(--mainText);
+	border-collapse: collapse;
+}
 
 .s1{
     background-color: var(--mainColor);

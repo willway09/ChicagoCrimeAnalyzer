@@ -11,6 +11,7 @@
 
 	<script src="JS/map.js"></script>
 	<script src="JS/functions.js"></script>
+	<script src="JS/clock.js"></script>
 	<script>
 		let graph = null;
 
@@ -19,6 +20,9 @@
 		let monthRange = null;
 
 		async function run() {
+
+			startClock(0);
+
 			let communityarea = parseInt(document.getElementById("communityarea").value);
 			let begin = monthToMonthIdx(stringToMonth(document.getElementById("begin").value))
 			let end = monthToMonthIdx(stringToMonth(document.getElementById("end").value))
@@ -64,6 +68,7 @@
 			addDataSeries(graph, output, "NeighborPopulationDensity", `Average Population Crime Density for ${areaNames.get(communityarea)}'s Neighbors`, 1);
 
 			document.getElementById("blankout").style.visibility="hidden";
+			stopClock();
 		}
 
 		async function main() {
@@ -189,8 +194,9 @@
 			</div>
 		</div>
 	</section>
-	<div id="blankout" style="display: flex; justify-content: center; align-items: center;">
+	<div id="blankout" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
 		<img src="Images/loading.svg" id="loading" style="width: min(200px, 20vw); height: min(200px, 20vw)"/>
+		<h1 id="clock"></h1>
 	</div>
 </body>
 

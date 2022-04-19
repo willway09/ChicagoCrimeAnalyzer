@@ -82,12 +82,12 @@ type communityAreasResult struct {
 }
 
 type NIBRSResult struct {
-	IUCR string
+	NIBRS string
 	Title string
 }
 
 type IUCRResult struct {
-	NIBRS string
+	IUCR string
 	Title string
 }
 
