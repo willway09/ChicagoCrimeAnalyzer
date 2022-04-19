@@ -1,67 +1,156 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <title>Chicago Crime Analizer</title>
-        <meta name="viewport" content="width=device-width, initial-scale1.0" />
-    
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-    
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inconsolata:wght@600&display=swap"
-            rel="stylesheet">
-    
-        <link rel="stylesheet" href="CSS/DarkProfile.css">
-    
-    
-    </head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<head>
+    <title>Chicago Crime Analizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale1.0" />
 
-    <body>
-        <section class="s1">
-            <div class="main-container">
-                <div class="greeting-wrapper">
-                    <h1>Crime data in the City of Chicago</h1>
-                </div>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inconsolata:wght@600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="CSS/DarkProfile.css">
+
+
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<body>
+    <section class="s1">
+        <div class="main-container">
+            <div class="greeting-wrapper">
+                <h1>Crime data in the City of Chicago</h1>
             </div>
-        </section>
-        <section class="s1">
-            
-                <h3 style="text-align: center;">Trends</h3>
-                <div class="nav-wrapper" style="display: flex; justify-content: center;">
-                    <ul id="navigation">
-                        <li><a href="home.html">Home |</a></li>
-                        <li><a href="query1.html">Overall Crime |</a></li>
-                        <li><a href="query2.html">Seasonal Crime |</a></li>
-                        <li><a href="query3.html">Crime Codes |</a></li>
-                        <li><a href="query4.html">Locational Shifts |</a></li>
-                        <li><a href="query5.html">Communities</a></li>
-                    </ul>
-                </div>
-           
-        </section>
-        
-        <section class="s2">
+        </div>
+    </section>
+    <section class="s1">
+
+        <h3 style="text-align: center;">Trends</h3>
+        <div class="nav-wrapper" style="display: flex; justify-content: center;">
+            <ul id="navigation">
+                <li><a href="home.html">Home |</a></li>
+                <li><a href="query1.html">Overall Crime |</a></li>
+                <li><a href="query2.html">Seasonal Crime |</a></li>
+                <li><a href="query3.html">Crime Codes |</a></li>
+                <li><a href="query4.html">Locational Shifts |</a></li>
+                <li><a href="query5.html">Communities</a></li>
+            </ul>
+        </div>
+
+    </section>
+
+    <section class="s2">
+        <div class="main-container">
             <div class="main-container">
-                <div class="main-container">
-                    <div class="about-wrapper">
-                        <div class="about-me">
-                            <h4>Objective</h4>
-                            <p>The City of Chicago provides a dashboard for visualizing it’s criminal activity [1] This seems to be a valuable asset, as it enables those who view it to view crime data intuitively and interact freely in different
-                                queries. However, dashboard’s charts only provide outputs corresponding to simple queries, including the
-                                frequency of crime types, the number of crimes in a community area (analogous to a neighborhood), and
-                                the direct trend of total crime over time; it not visualize complex queries, such as monthly/quarterly/annual crime density in a specific region, whether this monthly crime rate has increased or decreased, etc. This
-                                project seeks to address those shortcomings; with an interactive website and database management system,
-                                users can get gain intuition on complex queries based on the parameters they enter. </p>
-                        </div>
-                        <div class="social-links">
-                            <img src="Images/Example graph.PNG">
-                            
-                        </div>
-    
+                <div class="about-wrapper">
+                    <div class="about-me">
+                        <h4>Overview and Description</h4>
+                        <p>The City of Chicago provides a useful dashboard for visually viewing and interacting with
+                            crime data.
+                            However, the visuals it provides appear to just be from simple queries on the data -
+                            examples include the
+                            frequency of defined crime types, the amount of crime in community areas (similar to
+                            neighborhoods), and
+                            total crime over time. The purpose of this application to to offer additional, more complex
+                            queries on the
+                            same dataset to provide more interesting analysis points. In particular, these queries focus
+                            on population
+                            crime density (the amount of crime per person in an area) and the motion of crime over the
+                            course of a year
+                            or more. Users will interact with the application via an intuitive web interface, where they
+                            can learn about
+                            how to use the application, input query parameters, and visualize query results. </p>
                     </div>
-    
+
+                    <div class="social-links">
+
+                        <img style="width: 80%;height: auto;" src="Images/erdiagram.png">
+
+                    </div>
+
                 </div>
+
+                <div class="about-wrapper">
+                    <div class="about-me">
+                        <h4>Motivation</h4>
+                        <p>This application answers questions which are of interest to the local community. Individuals
+                            searching
+                            for housing in the city could use this project to avoid moving into an area which is
+                            currently experiencing
+                            a surge in crime. Police analysts could use it to observe seasonal trends in the motion of
+                            crime around
+                            the city, and to adjust policing efforts accordingly. Politicians could use it to identify
+                            the areas not with
+                            the most crime, but with the most crime per person living there (a better metric for needed
+                            help), and
+                            allocate resources accordingly. This application provides answers that are of general
+                            interest to a range of
+                            individuals.
+                        </p>
+                        <p>
+                            The base dataset enumerating the crimes in Chicago currently exceeds 7 million records. The
+                            usage of a database allows this data to
+                            efficiently stored, indexed,
+                            searched, and filtered. Additionally, a database can be used to reduce the size of the
+                            data; while the downloaded size of the CSV file containing the crimes is around 1.7Gb, a
+                            substantial portion of that is wasted on
+                            repeatedly storing information like crime descriptions (which are standardized by a crime
+                            code) and dates
+                            as strings.Finally, databases
+                            allow for the
+                            use of SQL, which provides an efficient and standardized way to formulate queries on large
+                            amounts of
+                            data; the alternative would be to manually write algorithms to interact with the data, which
+                            would take
+                            much longer and under the hood probably end up being partially redundant with SQL (i.e. this
+                            would be
+                            wasted effort reinventing the wheel). In the context of this application, because crime
+                            trends are of direct
+                            interest, using a tool to easily combine data to identify them makes sense. Thus, usage of a
+                            database for this
+                            project seems appropriate.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <h4>Web-Based UI Functionality</h4>
+                <p>The website is organized to such that the user can navigate to and from the homepage and the
+                    other queries via navigation bar.
+                    Each of these query pages will start with
+                    a description of the query, then will have a form to input query parameters, and a graph to
+                    display the
+                    output. The specific input will depend on what is needed by the query, though generally
+                    categorical values
+                    (such as community area name) will be input using a drop-down selection, while numerical
+                    values will be
+                    input using a slider. An interactable map will be available to select desired regions.
+                </p>
+                <p>The output
+                    is always plotted on a 2D scatterplot.
+                </p>
+                <h4>Application Goals Regarding Trend Analysis</h4>
+                <p>
+                    Two general goals of this application are to observe how crime density (not necessarily crime magnitude)
+changes over time, and to observe how crime moves in Chicago. In contrast to total crime numbers, crime
+density describes how much crime occurs per relevant unit, such as per person or per square kilometer. In
+areas with greater crime density, the average person living there will experience the crime more; in contrast,
+in areas with lower crime density, the toll is more bearable because it is diffused amongst more people.
+It
+appears that crime density is a superior metric for assessing crime levels, but isn’t reported immediately
+in the dataset; thus, this project focuses on using it in it’s queries, in particular in queries 1, 2, and 5 -
+these could directly inform decisions of where to allocate resources to address crime. Also interesting is the
+potential for motion of crime around the city. For example, criminals may move back and forth from East
+to West as the year progresses, or over the course of the year criminals may move out of one community
+area and into it’s neighbors; these area addressed by queries 4 and 5, respectively. This is interesting to
+enforcement, as they can allocate resources in anticipation of these trends. It should be noted that query 3
+doesn’t address either of these, but still seemed interesting and was thus included.
+                </p>
+
             </div>
-        </section>
-    </body>
+    </section>
+</body>
+
 </html>
