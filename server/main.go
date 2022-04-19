@@ -27,11 +27,15 @@ func main() {
 
 	fmt.Println(result)*/
 
-	var parameters query2Parameters
-	parameters.MinLen = 3000
-	parameters.NameLike = "M%"
+	var parameters query3Parameters
+	parameters.IUCRs = []string{"500N", "0452"}
+	parameters.NIBRSs = []string{"12"}
+	parameters.MonthIUCR = 9;
+	parameters.MonthNIBRS = 9;
+	parameters.BeginYear = 2001;
+	parameters.EndYear = 2022;
 
-	result := runQuery[query2Result](db, "queries/query2.sql", parameters)
+	result := runQuery[query3Result](db, "../queries/query3.sql", parameters)
 
 	fmt.Println(result)
 

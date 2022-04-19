@@ -71,11 +71,12 @@ func main() {
 			area.Households = "NULL"
 		}
 
-		if(area.Year == 2020) {
-			area.NextYear = area.Year
-		} else {
-			area.NextYear = area.Year + 10
-		}
+		//if(area.Year == 2020) {
+			//area.NextYear = area.Year
+		//} else {
+		//}
+
+		area.NextYear = area.Year + 10
 
 		_, ok := visited[area.ID]
 
@@ -86,6 +87,12 @@ func main() {
 		}
 		fmt.Fprintf(popOutput, "\tINTO CommunityAreaPopulations (CommunityArea, Year, Population, Households, NextYear) VALUES(%d, %d, %d, %s, %d)\n",
 			area.ID, area.Year, area.Population, area.Households, area.NextYear)
+
+		//Manually add upper bound for interpolation
+		if(area.Year == 2020) {
+			fmt.Fprintf(popOutput, "\tINTO CommunityAreaPopulations (CommunityArea, Year, Population, Households, NextYear) VALUES(%d, %d, %d, %s, %d)\n",
+				area.ID, area.Year + 10, area.Population, "NULL", area.NextYear)
+		}
 	}
 
 	fmt.Fprintln(areaOutput, "SELECT 1 FROM Dual;");

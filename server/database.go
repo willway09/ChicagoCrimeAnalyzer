@@ -65,31 +65,40 @@ func arrayToCommaList(intf interface{}) string {
 	rtn := ""
 	for i := 0; i < arr.Len(); i++ {
 		if(i != arr.Len() - 1) {
-			rtn += fmt.Sprintf("%s, ", arr.Index(i))
+			rtn += fmt.Sprintf("'%s', ", arr.Index(i))
 		} else {
-			rtn += fmt.Sprintf("%s", arr.Index(i))
+			rtn += fmt.Sprintf("'%s'", arr.Index(i))
 		}
 	}
 	return rtn
 }
 
-func getParametersArray(parameters interface{}) []interface{} {
+func getParametersArray(parameters interface{}, query string) ([]interface{}, string) {
 	v := reflect.ValueOf(parameters)
 
-	parametersArray := make([]interface{}, v.NumField())
+	parametersArray := make([]interface{}, 0)
 
 	for i := 0; i < v.NumField(); i++ {
 
 		field := v.Field(i)
 
 		if(field.Kind() == reflect.Array || field.Kind() == reflect.Slice) {
-			parametersArray[i] = arrayToCommaList(field.Interface())
+			name := ":" + strings.ToLower(v.Type().Field(i).Name)
+
+			if strings.Index(query, name) == -1 {
+				fmt.Printf("Cannot find parameter label %s in query\n", name);
+				handleError(errors.New("Small error"))
+			}
+
+			list := arrayToCommaList(field.Interface())
+
+			query = strings.ReplaceAll(query, name, list);
 		} else {
-			parametersArray[i] = field.Interface()
+			parametersArray = append(parametersArray, field.Interface())
 		}
 	}
 
-	return parametersArray
+	return parametersArray, query
 }
 
 //func readRow[T interface{}](sql.Row) T {
@@ -98,17 +107,18 @@ func getParametersArray(parameters interface{}) []interface{} {
 func runQuery[T interface{}](db *sql.DB, filename string, parameters interface{}) []T {
 	query := loadQuery(filename)
 
+	arr, query := getParametersArray(parameters, query)
+
 	stmt, err := db.Prepare(query)	
 	handleError(err)
 
-	arr := getParametersArray(parameters)
 	rows, err := stmt.Query(arr...)
 	handleError(err)
 
-	result := make([]T, 0, 100)
-
 	columnTypes, _ := rows.ColumnTypes()
 	colCount := len(columnTypes)
+
+	result := make([]T, 0, 100)
 
 	for rows.Next() {
 		cols := make([]interface{}, colCount)
@@ -121,7 +131,6 @@ func runQuery[T interface{}](db *sql.DB, filename string, parameters interface{}
 			fmt.Printf("Number of Fields: %d, Length of Columns: %d\n", v.NumField(), len(cols))
 			handleError(errors.New("Big error"))
 		}
-
 
 		colsV := reflect.ValueOf(cols)
 		for i := 0; i < len(cols); i++ {
@@ -138,7 +147,6 @@ func runQuery[T interface{}](db *sql.DB, filename string, parameters interface{}
 
 		result = append(result, res)
 	}
-
 
 	rows.Close()
 

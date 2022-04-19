@@ -28,13 +28,17 @@ type query2Result struct {
 type query3Parameters struct {
 	IUCRs []string
 	NIBRSs []string
-	Month int64
-	Year int64
+	BeginYear int64
+	EndYear int64
+	MonthIUCR int64
+	MonthNIBRS int64
 }
 
 type query3Result struct {
 	Year int64
 	Count int64
+	Code string
+	CodeType string
 }
 
 type query4Parameters struct {
