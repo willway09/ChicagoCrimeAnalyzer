@@ -3,7 +3,7 @@ WITH Filtered AS (
     WHERE 100000 * CrimeCount / Population > :threshold
 )
 
-SELECT Month, Year, COUNT(CommunityArea) AS Counts
+SELECT Year, Month, COUNT(CommunityArea) AS Counts
 FROM Filtered RIGHT OUTER JOIN AllMonths
 ON Filtered.MonthIdx = AllMonths.MonthIdx
 GROUP BY Month, Year, AllMonths.MonthIdx
